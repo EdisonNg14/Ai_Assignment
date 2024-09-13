@@ -11,7 +11,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 st.title('Game Recommendation System')
 
 # Load the data
-@st.cache_resource
+@st.cache
 def load_data():
     df = pd.read_csv('all_video_games(cleaned).csv')
     df_game_name = pd.DataFrame({'Game': df['Title']}).reset_index(drop=True)
