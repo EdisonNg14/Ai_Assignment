@@ -99,20 +99,29 @@ game_input = game_input.lower()
 
 # Button to generate recommendations
 if st.button('Get Recommendations'):
-    # Search for the game in the dataset
-    matching_games = df_game_name['Title'].apply(lambda x: x.lower()).str.contains(game_input)
+    
+# Search for the game in the dataset (exact matching)
+matching_games = df_game_name['Title'].apply(lambda x: x.lower() == game_input)
 
-    if matching_games.any():
-        selected_game = df_game_name[matching_games].iloc[0]['Game']  # Get the first matching game
-        st.write(f"Recommendations for the game: {selected_game}")
-        
-        # Depending on the model type selected, get the recommendations
-        if model_type == "Euclidean Distance":
-            recommendations = GameRecommended(selected_game)
-        elif model_type == "Cosine Similarity":
-            recommendations = CosineGameRecommended(selected_game)
-
-        # Display the recommendations
-        st.table(recommendations)
+if matching_games.any():
+    matching_games_list = df_game_name[matching_games]['Game'].tolist()
+    if len(matching_games_list) > 1:
+        st.write("Multiple games found. Please select a game:")
+        selected_game = st.selectbox("Select a game", matching_games_list)
     else:
-        st.write("No matching game found. Please try again.")
+        selected_game = matching_games_list[0]
+        
+    st.write(f"Recommendations for the game: {selected_game}")
+        
+# Depending on the model type selected, get the recommendations
+if model_type == "Euclidean Distance":
+    recommendations = GameRecommended(selected_game)
+elif model_type == "Cosine Similarity":
+    recommendations = CosineGameRecommended(selected_game)
+
+# Display the recommendations
+st.table(recommendations)
+else:
+    st.write("No matching game found. Please try again.")
+else:
+    st.write("No matching game found. Please try again.")
