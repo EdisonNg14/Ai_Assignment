@@ -100,7 +100,7 @@ game_input = game_input.lower()
 # Button to generate recommendations
 if st.button('Get Recommendations'):
     # Search for the game in the dataset
-    matching_games = df_game_name['Game'].apply(lambda x: x.lower()).str.contains(game_input)
+    matching_games = df_game_name['Title'].apply(lambda x: x.lower()).str.contains(game_input)
 
     if matching_games.any():
         selected_game = df_game_name[matching_games].iloc[0]['Game']  # Get the first matching game
