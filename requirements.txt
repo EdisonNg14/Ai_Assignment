@@ -7,3 +7,4 @@ pandas==1.2.3
 joblib==0.16.0
 setuptools==74.1.2
 scikit-learn
+distutils
