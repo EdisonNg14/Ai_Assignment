@@ -92,14 +92,29 @@ def CosineGameRecommended(gamename:str, recommended_games:int=5):
 
 # Sidebar options
 model_type = st.sidebar.selectbox("Choose recommendation model", ["Euclidean Distance", "Cosine Similarity"])
-game_selected = st.sidebar.selectbox("Select a Game", df_game_name['Game'])
+
+# Search box for game selection
+game_input = st.sidebar.text_input("Search for a Game", "")
+
+# Convert user input to lowercase for case-insensitive matching
+game_input = game_input.lower()
 
 # Button to generate recommendations
 if st.sidebar.button('Get Recommendations'):
-    st.write(f"Recommendations for the game: {game_selected}")
-    if model_type == "Euclidean Distance":
-        recommendations = GameRecommended(game_selected)
+    # Search for the game in the dataset
+    matching_games = df_game_name['Game'].apply(lambda x: x.lower()).str.contains(game_input)
+
+    if matching_games.any():
+        selected_game = df_game_name[matching_games].iloc[0]['Game']  # Get the first matching game
+        st.write(f"Recommendations for the game: {selected_game}")
+        
+        # Depending on the model type selected, get the recommendations
+        if model_type == "Euclidean Distance":
+            recommendations = GameRecommended(selected_game)
+        elif model_type == "Cosine Similarity":
+            recommendations = CosineGameRecommended(selected_game)
+
+        # Display the recommendations
         st.table(recommendations)
-    elif model_type == "Cosine Similarity":
-        recommendations = CosineGameRecommended(game_selected)
-        st.table(recommendations)
+    else:
+        st.write("No matching game found. Please try again.")
