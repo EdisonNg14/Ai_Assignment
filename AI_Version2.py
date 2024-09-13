@@ -10,9 +10,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Title for the Streamlit app
 st.title('Game Recommendation System')
 
-# Sidebar title
-st.sidebar.title('Settings')
-
 # Load the data
 @st.cache_resource
 def load_data():
@@ -93,14 +90,15 @@ def CosineGameRecommended(gamename:str, recommended_games:int=5):
 # Sidebar options
 model_type = st.sidebar.selectbox("Choose recommendation model", ["Euclidean Distance", "Cosine Similarity"])
 
-# Search box for game selection
-game_input = st.sidebar.text_input("Search for a Game", "")
+# Search box for game selection on the main page
+st.subheader("Search for a Game")
+game_input = st.text_input("Enter the game name:", "")
 
 # Convert user input to lowercase for case-insensitive matching
 game_input = game_input.lower()
 
 # Button to generate recommendations
-if st.sidebar.button('Get Recommendations'):
+if st.button('Get Recommendations'):
     # Search for the game in the dataset
     matching_games = df_game_name['Game'].apply(lambda x: x.lower()).str.contains(game_input)
 
