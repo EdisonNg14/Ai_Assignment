@@ -9,9 +9,7 @@ import streamlit as st
 # Load the cleaned dataset
 df = pd.read_csv('all_video_games(cleaned).csv')
 
-# Cleaning and preparation steps (already done in your provided code)
-
-# Save game names on new dataframe
+# Save game names in a new dataframe
 df_game_name = pd.DataFrame({'Game': df['Title']}).reset_index(drop=True)
 
 # Use the name column as index
@@ -46,11 +44,11 @@ for i, column in enumerate(column_numeric):
 model = NearestNeighbors(metric='euclidean')
 model.fit(df)
 
-# Create function to get game recommendations using Euclidean distance
+# Function to get game recommendations using Euclidean distance
 def GameRecommended(gamename: str, recommended_games: int = 6):
     distances, neighbors = model.kneighbors(df.loc[gamename], n_neighbors=recommended_games)
     similar_game = []
-    for game in df_game_name.loc[neighbors[0][:]].values:
+    for game in df_game_name.loc[neighbors[0]].values:
         similar_game.append(game[0])
     similar_distance = []
     for distance in distances[0]:
@@ -61,15 +59,11 @@ def GameRecommended(gamename: str, recommended_games: int = 6):
 cosine_sim = cosine_similarity(df)
 cosine_sim_df = pd.DataFrame(cosine_sim, index=df_game_name['Game'], columns=df_game_name['Game'])
 
-# Create function to get game recommendations using cosine similarity
+# Function to get game recommendations using cosine similarity
 def CosineGameRecommended(gamename: str, recommended_games: int = 5):
-    arr, ind = np.unique(cosine_sim_df.loc[gamename], return_index=True)
-    similar_game = []
-    for index in ind[-(recommended_games + 1):-1]:
-        similar_game.append(df_game_name.loc[index][0])
-    cosine_score = []
-    for score in arr[-(recommended_games + 1):-1]:
-        cosine_score.append(score)
+    similarity_scores = cosine_sim_df[gamename].sort_values(ascending=False)
+    similar_game = similarity_scores.iloc[1:recommended_games + 1].index  # Exclude the game itself
+    cosine_score = similarity_scores.iloc[1:recommended_games + 1].values
     return pd.DataFrame(data={"Game": similar_game, "Cosine Similarity": cosine_score}).sort_values(by='Cosine Similarity', ascending=False)
 
 # Streamlit app layout
@@ -90,7 +84,7 @@ if game_input:
         
         # Cosine similarity-based recommendations
         st.write("**Recommendations using Cosine Similarity:**")
-        cosine_recommendations = CosineGameRecommended([game_input])
+        cosine_recommendations = CosineGameRecommended(game_input)
         st.dataframe(cosine_recommendations)
     else:
         st.error("Game not found in the dataset. Please try another game.")
