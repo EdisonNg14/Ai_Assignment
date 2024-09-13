@@ -46,8 +46,8 @@ def content_based_recommendations(game_name, num_recommendations=5):
         return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
 # Sidebar for additional filters
-st.sidebar.header("Filters")
-num_recommendations = st.sidebar.slider('Number of recommendations', min_value=1, max_value=10, value=5)
+st.header("Filters")
+num_recommendations = st.slider('Number of recommendations', min_value=1, max_value=10, value=5)
 
 # Add a selectbox for game selection
 st.subheader("Search for a Game")
