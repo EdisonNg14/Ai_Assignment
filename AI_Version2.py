@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from collections import Counter
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics.pairwise import cosine_similarity
@@ -12,7 +11,7 @@ st.title('Game Recommendation System')
 # Load the data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('all_video_games(cleaned).csv', nrows=10000)  # Load a subset for testing
+    df = pd.read_csv('all_video_games(cleaned).csv')
     df_game_name = pd.DataFrame({'Game': df['Title']}).reset_index(drop=True)
     return df, df_game_name
 
@@ -22,7 +21,7 @@ df, df_game_name = load_data()
 # Data Cleaning Process
 def clean_data(df):
     # Drop rows with missing critical columns
-    df.dropna(subset=['Product Rating', 'Platforms', 'Genres', 'Publisher', 'Release Date', 'User Score', 'Developer', 'User Ratings Count'], inplace=True)
+    df.dropna(subset=['Product Rating', 'Platforms', 'Genres', 'Publisher', 'Release Date', 'User Score', 'User Ratings Count'], inplace=True)
     
     # Drop rows with specific conditions
     df = df[df['Platforms'] != 'Meta Quest']
@@ -41,15 +40,13 @@ df = clean_data(df)
 
 # One-hot encoding for categorical data
 df.set_index('Title', inplace=True)
-column_object = df.select_dtypes(include='object').columns
-one_hot_label = pd.get_dummies(df[column_object])
-df.drop(columns=column_object, inplace=True)
+one_hot_label = pd.get_dummies(df.select_dtypes(include='object'))
 df = pd.concat([df, one_hot_label], axis=1)
+df.drop(columns=df.select_dtypes(include='object').columns, inplace=True)
 
 # MinMaxScaler for numerical data
 scaler = MinMaxScaler()
-column_numeric = df.select_dtypes(include='float64').columns
-df[column_numeric] = scaler.fit_transform(df[column_numeric])
+df[df.select_dtypes(include='float64').columns] = scaler.fit_transform(df.select_dtypes(include='float64'))
 
 # Nearest Neighbors model setup
 model = NearestNeighbors(metric='euclidean')
@@ -60,18 +57,38 @@ cosine_sim = cosine_similarity(df)
 cosine_sim_df = pd.DataFrame(cosine_sim, index=df.index, columns=df.index)
 
 # Function to recommend games based on Nearest Neighbors model
-def game_recommended(gamename:str, recommended_games:int=6):
-    distances, neighbors = model.kneighbors(df.loc[gamename].values.reshape(1, -1), n_neighbors=recommended_games)
+def game_recommended(gamename: str, recommended_games: int = 6):
+    if gamename not in df.index:
+        return pd.DataFrame(columns=["Game", "Similarity"])  # Return empty DataFrame if game not found
+    
+    distances, neighbors = model.kneighbors(df.loc[[gamename]], n_neighbors=recommended_games)
     similar_games = [df.index[neighbor] for neighbor in neighbors[0]]
     similar_distances = [f"{round(100 - distance, 2)}%" for distance in distances[0]]
     return pd.DataFrame(data={"Game": similar_games[1:], "Similarity": similar_distances[1:]})
 
 # Function to recommend games based on cosine similarity
-def cosine_game_recommended(gamename:str, recommended_games:int=5):
-    arr, ind = np.unique(cosine_sim_df.loc[gamename], return_index=True)
-    similar_games = [df.index[index] for index in ind[-(recommended_games+1):-1]]
-    cosine_scores = [arr[index] for index in range(-(recommended_games+1), -1)]
-    return pd.DataFrame(data={"Game": similar_games, "Cosine Similarity": cosine_scores}).sort_values(by='Cosine Similarity', ascending=False)
+def cosine_game_recommended(gamename: str, recommended_games: int = 5):
+    if gamename not in cosine_sim_df.index:
+        return pd.DataFrame(columns=["Game", "Cosine Similarity"])
+
+    # If game is not found, return an empty DataFrame
+    if gamename not in cosine_sim_df.index:
+        return pd.DataFrame(columns=["Game", "Cosine Similarity"])
+
+    # Get similarity scores and indices
+    sim_scores = cosine_sim_df.loc[gamename]
+    top_indices = sim_scores.nlargest(recommended_games + 1).index
+    top_scores = sim_scores[top_indices]
+    
+    # Remove the game itself from the results
+    if gamename in top_indices:
+        top_indices = top_indices[top_indices != gamename]
+        top_scores = top_scores.drop(gamename)
+    
+    similar_games = top_indices
+    cosine_scores = top_scores
+    
+    return pd.DataFrame(data={"Game": similar_games, "Cosine Similarity": cosine_scores})
 
 # Main page functionality
 st.subheader("Search for a Game")
@@ -94,6 +111,9 @@ if st.button('Get Recommendations'):
             recommendations = cosine_game_recommended(selected_game)
 
         # Display the recommendations
-        st.table(recommendations)
+        if recommendations.empty:
+            st.write("No recommendations available.")
+        else:
+            st.table(recommendations)
     else:
         st.write("No matching game found. Please try again.")
