@@ -101,7 +101,7 @@ game_input = game_input.lower()
 if st.button('Get Recommendations'):
     
 # Search for the game in the dataset (exact matching)
-matching_games = df_game_name['Title'].apply(lambda x: x.lower() == game_input)
+matching_games = df_game_name['Game'].apply(lambda x: x.lower() == game_input)
 
 if matching_games.any():
     matching_games_list = df_game_name[matching_games]['Game'].tolist()
