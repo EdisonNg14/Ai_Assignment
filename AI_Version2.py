@@ -14,7 +14,7 @@ st.title('Game Recommendation System')
 st.sidebar.title('Settings')
 
 # Load the data
-@st.cache
+@st.cache_resource
 def load_data():
     df = pd.read_csv('all_video_games(cleaned).csv')
     df_game_name = pd.DataFrame({'Game': df['Title']}).reset_index(drop=True)
