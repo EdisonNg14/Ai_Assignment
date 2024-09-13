@@ -20,50 +20,29 @@ def load_data():
 # Load and cache the data
 df, df_game_name = load_data()
 
-# Data Cleaning Process (same as your original code)
-for index in df[df['Product Rating'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['Platforms'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-platform_counter = Counter(df['Platforms'])
-platform_less_than_350 = ['Meta Quest']
-df = df[~df['Platforms'].isin(platform_less_than_350)]
-for index in df[df['Genres'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
+# Data Cleaning Process (optimized)
+df.dropna(subset=['Product Rating', 'Platforms', 'Genres', 'Publisher', 'Release Date', 'User Score', 'User Ratings Count'], inplace=True)
 df = df[df['Genres'] != 'Misc']
-for index in df[df['Publisher'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['Publisher'] == 'Unknown'].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['Release Date'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-df['Release Date'] = df['Release Date'].astype('str')
-for index in df[df['User Score'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['Developer'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['User Ratings Count'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
-for index in df[df['Product Rating'].isna()].index:
-    df.drop(index, axis=0, inplace=True)
+df = df[df['Publisher'] != 'Unknown']
+df['Release Date'] = df['Release Date'].astype(str)
 df['User Score'] = df['User Score'].astype('float')
 df.drop('Developer', axis=1, inplace=True)
 
+# Filtering platforms with fewer games
+platform_less_than_350 = ['Meta Quest']
+df = df[~df['Platforms'].isin(platform_less_than_350)]
+
 # One-hot encoding for categorical data
 df.set_index('Title', inplace=True)
-column_object = df.dtypes[df.dtypes == 'object'].keys()
+column_object = df.select_dtypes(include='object').columns
 one_hot_label = pd.get_dummies(df[column_object])
 df.drop(column_object, axis=1, inplace=True)
 df = pd.concat([df, one_hot_label], axis=1)
 
 # MinMaxScaler for numerical data
-column_numeric = list(df.dtypes[df.dtypes == 'float64'].keys())
+column_numeric = df.select_dtypes(include='float64').columns
 scaler = MinMaxScaler()
-scaled = scaler.fit_transform(df[column_numeric])
-i = 0
-for column in column_numeric:
-    df[column] = scaled[:, i]
-    i += 1
+df[column_numeric] = scaler.fit_transform(df[column_numeric])
 
 # Nearest Neighbors model setup
 model = NearestNeighbors(metric='euclidean')
@@ -87,29 +66,24 @@ def CosineGameRecommended(gamename:str, recommended_games:int=5):
     cosine_score = [arr[index] for index in range(-(recommended_games+1), -1)]
     return pd.DataFrame(data={"Game": similar_game, "Cosine Similarity": cosine_score}).sort_values(by='Cosine Similarity', ascending=False)
 
-# Sidebar options
-model_type = st.sidebar.selectbox("Choose recommendation model", ["Euclidean Distance", "Cosine Similarity"])
+# Model selection dropdown on the main page
+st.subheader("Recommendation Settings")
+model_type = st.selectbox("Choose recommendation model", ["Euclidean Distance", "Cosine Similarity"])
 
 # Search box for game selection on the main page
 st.subheader("Search for a Game")
-game_input = st.text_input("Enter the game name:", "")
+game_input = st.text_input("Enter the game name:")
 
 # Convert user input to lowercase for case-insensitive matching
 game_input = game_input.lower()
 
 # Button to generate recommendations
 if st.button('Get Recommendations'):
-    # Search for the game in the dataset (exact matching)
-    matching_games = df_game_name['Game'].apply(lambda x: x.lower() == game_input)
+    # Search for the game in the dataset
+    matching_games = df_game_name['Game'].apply(lambda x: x.lower()).str.contains(game_input)
 
     if matching_games.any():
-        matching_games_list = df_game_name[matching_games]['Game'].tolist()
-        if len(matching_games_list) > 1:
-            st.write("Multiple games found. Please select a game:")
-            selected_game = st.selectbox("Select a game", matching_games_list)
-        else:
-            selected_game = matching_games_list[0]
-        
+        selected_game = df_game_name[matching_games].iloc[0]['Game']  # Get the first matching game
         st.write(f"Recommendations for the game: {selected_game}")
         
         # Depending on the model type selected, get the recommendations
