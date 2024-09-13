@@ -1,127 +1,78 @@
-# Streamlit and other necessary libraries
 import streamlit as st
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.neighbors import NearestNeighbors
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Title for the Streamlit app with a better UI layout
-st.set_page_config(page_title="Game Recommendation System", layout="wide")
-st.title('🎮 Game Recommendation System')
+# Title for the Streamlit app with custom styling
+st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🎮 Game Recommendation System</h1>", unsafe_allow_html=True)
 
-# Load the dataset
-@st.cache_resource
+# Load the data
+@st.cache_data
 def load_data():
     df = pd.read_csv('all_video_games(cleaned).csv')
-    df_game_name = pd.DataFrame({'Game': df['Title']}).reset_index(drop=True)
-    return df, df_game_name
-
-# Load the dataset
-df, df_game_name = load_data()
-
-# Data Cleaning Process
-def clean_data(df):
-    for col in ['Product Rating', 'Platforms', 'Genres', 'Publisher', 'Release Date', 'User Score', 'Developer', 'User Ratings Count']:
-        df.dropna(subset=[col], inplace=True)
-
-    df = df[df['Platforms'] != 'Meta Quest']
-    df = df[df['Genres'] != 'Misc']
-    df = df[df['Publisher'] != 'Unknown']
-    df['Release Date'] = df['Release Date'].astype('str')
-    df['User Score'] = df['User Score'].astype('float')
-    df.drop('Developer', axis=1, inplace=True)
-
-    # One-hot encoding for categorical data
-    df.set_index('Title', inplace=True)
-    column_object = df.dtypes[df.dtypes == 'object'].keys()
-    one_hot_label = pd.get_dummies(df[column_object])
-    df.drop(column_object, axis=1, inplace=True)
-    df = pd.concat([df, one_hot_label], axis=1)
-    
-    # MinMaxScaler for numerical data
-    column_numeric = list(df.dtypes[df.dtypes == 'float64'].keys())
-    scaler = MinMaxScaler()
-    scaled = scaler.fit_transform(df[column_numeric])
-    for i, column in enumerate(column_numeric):
-        df[column] = scaled[:, i]
-    
+    df = df.dropna(subset=['Genres', 'Platforms', 'Publisher', 'User Score'])  # Drop rows with essential missing values
+    df['User Score'] = df['User Score'].astype(float)  # Ensure correct data type for user score
+    df['content'] = df['Genres'] + ' ' + df['Platforms'] + ' ' + df['Publisher']
     return df
 
-# Clean the dataset
-df = clean_data(df)
+df = load_data()
 
-# Model initialization
-model = NearestNeighbors(metric='euclidean')
-model.fit(df)
+# Vectorize the content using TfidfVectorizer
+vectorizer = TfidfVectorizer(stop_words='english')
+content_matrix = vectorizer.fit_transform(df['content'])
 
-# Cosine similarity matrix calculation
-cosine_sim = cosine_similarity(df)
-cosine_sim_df = pd.DataFrame(cosine_sim, index=df.index, columns=df.index)
+# Function to recommend games based on cosine similarity
+def content_based_recommendations(game_name, num_recommendations=5):
+    try:
+        # Calculate cosine similarity
+        cosine_sim = cosine_similarity(content_matrix, content_matrix)
 
-# Functions for recommendations
-def GameRecommended(gamename:str, recommended_games:int=6):
-    distances, neighbors = model.kneighbors(df.loc[gamename], n_neighbors=recommended_games)
-    similar_game = [df_game_name.loc[neighbor][0] for neighbor in neighbors[0]]
-    similar_distance = [f"{round(100 - distance, 2)}%" for distance in distances[0]]
-    return pd.DataFrame(data={"Game": similar_game[1:], "Similarity": similar_distance[1:]})
+        # Get the index of the input game
+        idx = df[df['Title'].str.lower() == game_name.lower()].index[0]
 
-def CosineGameRecommended(gamename:str, recommended_games:int=5):
-    arr, ind = np.unique(cosine_sim_df.loc[gamename], return_index=True)
-    similar_game = [df_game_name.loc[index][0] for index in ind[-(recommended_games+1):-1]]
-    cosine_score = [arr[index] for index in range(-(recommended_games+1), -1)]
-    return pd.DataFrame(data={"Game": similar_game, "Cosine Similarity": cosine_score}).sort_values(by='Cosine Similarity', ascending=False)
+        # Get similarity scores for all games
+        sim_scores = list(enumerate(cosine_sim[idx]))
 
-# UI layout with tabs
-tab1, tab2 = st.tabs(["🔍 Search and Recommend", "📊 Visualize Data"])
+        # Sort games based on similarity scores
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-with tab1:
-    st.header("Game Search & Recommendations")
+        # Get indices of the most similar games
+        sim_indices = [i[0] for i in sim_scores[1:num_recommendations+1]]
+
+        # Return the most similar games
+        return df.iloc[sim_indices][['Title', 'Genres', 'User Score', 'Platforms', 'Release Date']]
     
-    # Search box for game selection on the main page
-    game_input = st.text_input("Enter the game name:", "")
-    game_input = game_input.lower()
+    except IndexError:
+        return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
-    # Recommendation settings (side by side layout)
-    col1, col2 = st.columns(2)
-    with col1:
-        model_type = st.selectbox("Choose recommendation model", ["Euclidean Distance", "Cosine Similarity"])
-    with col2:
-        n_recommendations = st.slider("Number of recommendations", min_value=3, max_value=10, value=5)
+# Sidebar for additional filters
+st.sidebar.header("Filters")
+num_recommendations = st.sidebar.slider('Number of recommendations', min_value=1, max_value=10, value=5)
 
-    # Button to generate recommendations
-    if st.button('Get Recommendations'):
-        matching_games = df_game_name['Game'].apply(lambda x: x.lower()).str.contains(game_input)
+# Add a selectbox for game selection
+st.subheader("Search for a Game")
+game_list = df['Title'].unique()
+game_input = st.selectbox("Choose a game from the list:", game_list)
 
-        if matching_games.any():
-            selected_game = df_game_name[matching_games].iloc[0]['Game']
-            st.write(f"Recommendations for the game: {selected_game}")
-            
-            if model_type == "Euclidean Distance":
-                recommendations = GameRecommended(selected_game, n_recommendations)
-            elif model_type == "Cosine Similarity":
-                recommendations = CosineGameRecommended(selected_game, n_recommendations)
-            
-            # Display recommendations
-            st.table(recommendations)
-        else:
-            st.warning("No matching game found. Please try again.")
+# Game information display
+if game_input:
+    game_info = df[df['Title'] == game_input].iloc[0]
+    st.markdown(f"### Selected Game: **{game_info['Title']}**")
+    st.write(f"**Genres:** {game_info['Genres']}")
+    st.write(f"**Platforms:** {game_info['Platforms']}")
+    st.write(f"**Publisher:** {game_info['Publisher']}")
+    st.write(f"**User Score:** {game_info['User Score']}")
+    st.write(f"**Release Date:** {game_info['Release Date']}")
 
-with tab2:
-    st.header("Data Visualizations")
+# Button to generate recommendations
+if st.button('Get Recommendations'):
+    recommendations = content_based_recommendations(game_input, num_recommendations)
     
-    # Show dataset overview
-    st.subheader("Game Data Overview")
-    st.dataframe(df_game_name.head(10))
-    
-    # Show distribution of genres or platforms
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Platform Distribution")
-        platform_counts = df['Platforms'].value_counts().nlargest(10)
-        st.bar_chart(platform_counts)
-    
-    with col2:
-        st.subheader("Genre Distribution")
-        genre_counts = df['Genres'].value_counts().nlargest(10)
-        st.bar_chart(genre_counts)
+    if not recommendations.empty:
+        st.markdown(f"### Games similar to **{game_input}**:")
+        st.table(recommendations)
+    else:
+        st.write("No matching game found. Please try another.")
+
+# Footer
+st.markdown("<h5 style='text-align: center;'>Powered by Streamlit</h5>", unsafe_allow_html=True)
