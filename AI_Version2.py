@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Title for the Streamlit app
-st.title('Content-Based Game Recommendation System')
+st.title('Game Recommendation System')
 
 # Load the data
 @st.cache_data
