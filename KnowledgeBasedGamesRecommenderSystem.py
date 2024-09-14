@@ -5,10 +5,10 @@ def main():
     st.title("Game Recommendation System")
     
     st.markdown("""
-    Welcome to the Game Recommendation System! Please follow the steps below:
+    Welcome to the Game Recommendation System! Follow these steps:
     1. **Upload** a CSV file containing your game data.
     2. **Enter** your preferred genre and minimum acceptable user score.
-    3. **Get Recommendations** based on your inputs.
+    3. **Click** the "Get Recommendations" button to see your results.
     """)
 
     # Upload the dataset via Streamlit's file uploader
@@ -26,10 +26,21 @@ def main():
             df['User Score'] = pd.to_numeric(df['User Score'], errors='coerce')
 
             st.sidebar.header("Filter Options")
+            
             # Function to get user preferences via Streamlit inputs
             def get_user_preferences():
-                genres = st.sidebar.text_input("Enter your preferred genre:", value="Action").strip()  # Streamlit input for genre
-                min_user_score = st.sidebar.number_input("Enter your minimum acceptable user score:", min_value=0.0, value=0.0, format="%.1f")  # Numeric input for score
+                # Example genre input
+                genres = st.sidebar.text_input(
+                    "Enter your preferred genre (e.g., Action, Adventure):",
+                    value="Action"
+                ).strip()
+                
+                # Example minimum user score input
+                min_user_score = st.sidebar.number_input(
+                    "Enter your minimum acceptable user score (0.0 to 10.0):",
+                    min_value=0.0, max_value=10.0, value=0.0, format="%.1f"
+                )
+                
                 return {
                     'Genres': genres,
                     'Minimum User Score': min_user_score
