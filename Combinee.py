@@ -86,12 +86,14 @@ pages = {
     "About": "ℹ️"
 }
 
-# Create a radio button for page selection with icons
-page = st.sidebar.radio(
+# Create a custom sidebar menu
+st.sidebar.markdown('<div class="sidebar-menu">', unsafe_allow_html=True)
+page = st.sidebar.selectbox(
     "Go to",
     options=list(pages.keys()),
     format_func=lambda page: f"{pages[page]} {page}"
 )
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # Home Page
 if page == "Home":
