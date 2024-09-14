@@ -76,7 +76,10 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Go to", ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"])
+page = st.sidebar.radio(
+    "Go to",
+    ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"]
+)
 
 # Home Page
 if page == "Home":
