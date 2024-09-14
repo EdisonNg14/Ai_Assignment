@@ -74,26 +74,18 @@ def recommend_games(df, preferences):
     filtered_df = df[genre_filter & score_filter]
     return filtered_df
 
-# Navigation Sidebar
-st.sidebar.title("Navigation")
-
-# Define the pages with icons
-pages = {
-    "Home": "🏠",
-    "Content-Based Recommendations": "🔍",
-    "Top 10 Recommendation based on User Preference": "📈",
-    "Game Correlation Finder": "🔗",
-    "About": "ℹ️"
-}
-
 # Create a custom sidebar menu
-st.sidebar.markdown('<div class="sidebar-menu">', unsafe_allow_html=True)
-page = st.sidebar.selectbox(
-    "Go to",
-    options=list(pages.keys()),
-    format_func=lambda page: f"{pages[page]} {page}"
-)
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+st.sidebar.title("Navigation")
+for page, icon in pages.items():
+    if st.sidebar.button(f"{icon} {page}"):
+        st.session_state.page = page
+
+# Set the default page
+if 'page' not in st.session_state:
+    st.session_state.page = "Home"
+
+# Page Navigation
+page = st.session_state.page
 
 # Home Page
 if page == "Home":
