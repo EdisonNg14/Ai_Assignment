@@ -51,10 +51,16 @@ pages = ["Home", "Search for Game", "About"]
 
 # Implement buttons for navigation in the sidebar
 if st.sidebar.button("Home"):
-    page = "Home"
-elif st.sidebar.button("Search for Game"):
+    page = "Home"  
     page = "Search for Game"
+    page = "About"
+elif st.sidebar.button("Search for Game"):
+    page = "Home"  
+    page = "Search for Game"
+    page = "About"
 elif st.sidebar.button("About"):
+    page = "Home"  
+    page = "Search for Game"
     page = "About"
 else:
     page = "Home"  # Default to Home if no button is pressed
