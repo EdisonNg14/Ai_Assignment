@@ -14,7 +14,7 @@ def main():
     st.markdown("""
     <style>
     .main {
-        background-color: #000000;
+        background-color: #black;
     }
     .sidebar .sidebar-content {
         background-color: #f0f0f5;
