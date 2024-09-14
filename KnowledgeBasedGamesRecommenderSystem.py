@@ -14,7 +14,7 @@ def main():
     st.markdown("""
     <style>
     .stApp {
-        background-color: #f0f0f5;  /* Set background color for the whole page */
+        background-color: #black;
     }
     .stButton>button {
         background-color: #4CAF50;
