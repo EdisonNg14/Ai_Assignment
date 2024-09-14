@@ -2,17 +2,20 @@ import streamlit as st
 import pandas as pd
 
 def main():
-    st.title("Game Recommendation System")
+    st.set_page_config(page_title="Game Recommendation System", page_icon=":video_game:", layout="wide")
+    
+    st.title("🎮 Game Recommendation System")
     
     st.markdown("""
-    Welcome to the Game Recommendation System! Please follow these steps:
-    1. **Upload** a CSV file containing your game data.
-    2. **Enter** your preferred genre and minimum acceptable user score.
-    3. **Click** the "Get Recommendations" button to see your results.
+    Welcome to the Game Recommendation System! Follow these steps to find your next favorite game:
+    1. **Upload** a CSV file with game data.
+    2. **Specify** your preferred genre and minimum acceptable user score.
+    3. **Click** "Get Recommendations" to see the results.
     """)
 
-    # Upload the dataset via Streamlit's file uploader
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    # File upload section
+    st.sidebar.header("Upload Your Data")
+    uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
 
     if uploaded_file is not None:
         try:
@@ -25,71 +28,55 @@ def main():
             # Convert 'User Score' to numeric, handling non-numeric values
             df['User Score'] = pd.to_numeric(df['User Score'], errors='coerce')
 
-            # Display a preview of the dataset
+            # Display a preview of the dataset in the main area
             st.write("### Dataset Preview:")
             st.dataframe(df.head())
 
+            # Sidebar for user preferences
             st.sidebar.header("Filter Options")
             
-            # Function to get user preferences via Streamlit inputs
-            def get_user_preferences():
-                # Example genre input
-                genres = st.sidebar.text_input(
-                    "Enter your preferred genre (e.g., Action, Adventure):",
-                    value="Action",
-                    help="Type the genre you are interested in. For multiple genres, separate them with commas."
-                ).strip()
-                
-                # Minimum user score input with validation
-                min_user_score_str = st.sidebar.text_input(
-                    "Enter your minimum acceptable user score (0.0 to 10.0):",
-                    value="0.0",
-                    help="Specify the minimum user score you are willing to accept. Enter a number between 0.0 and 10.0."
-                )
-                
-                try:
-                    min_user_score = float(min_user_score_str)
-                    if min_user_score < 0.0 or min_user_score > 10.0:
-                        st.sidebar.error("Score must be between 0.0 and 10.0.")
-                        min_user_score = 0.0
-                except ValueError:
-                    st.sidebar.error("Please enter a valid numeric score.")
+            # Get user preferences
+            genres = st.sidebar.text_input(
+                "Enter your preferred genre (e.g., Action, Adventure):",
+                value="Action",
+                help="Type the genre you are interested in. For multiple genres, separate them with commas."
+            ).strip()
+            
+            min_user_score_str = st.sidebar.text_input(
+                "Enter your minimum acceptable user score (0.0 to 10.0):",
+                value="0.0",
+                help="Specify the minimum user score you are willing to accept. Enter a number between 0.0 and 10.0."
+            )
+            
+            try:
+                min_user_score = float(min_user_score_str)
+                if min_user_score < 0.0 or min_user_score > 10.0:
+                    st.sidebar.error("Score must be between 0.0 and 10.0.")
                     min_user_score = 0.0
-                
-                return {
-                    'Genres': genres,
-                    'Minimum User Score': min_user_score
-                }
+            except ValueError:
+                st.sidebar.error("Please enter a valid numeric score.")
+                min_user_score = 0.0
 
             # Function to recommend games based on user preferences
             def recommend_games(df, preferences):
-                # Filter by genre
                 genre_filter = df['Genres'].str.contains(preferences['Genres'], case=False, na=False)
-                
-                # Filter by user score
                 score_filter = df['User Score'] >= preferences['Minimum User Score']
-                
-                # Apply filters
                 filtered_df = df[genre_filter & score_filter]
-                
                 return filtered_df
 
-            # Get User Preferences
-            user_preferences = get_user_preferences()
-
+            # Recommend games when button is clicked
             if st.sidebar.button("Get Recommendations"):
-                # Recommend Games
-                if user_preferences['Genres']:  # Check if genres input is provided
+                st.spinner("Processing your request...")
+                if genres:  # Check if genres input is provided
                     try:
-                        recommended_games = recommend_games(df, user_preferences)
+                        recommended_games = recommend_games(df, {'Genres': genres, 'Minimum User Score': min_user_score})
                         
                         if not recommended_games.empty:
-                            # Show top 10 recommendations
                             top_10_games = recommended_games.head(10)
-                            st.write("### Top 10 Recommended Games based on your preferences:")
+                            st.write("### Top 10 Recommended Games:")
                             st.dataframe(top_10_games)  # Display the top 10 recommendations in a table
 
-                            # Provide an option to download the recommendations
+                            # Option to download recommendations
                             csv = top_10_games.to_csv(index=False)
                             st.download_button(
                                 label="Download Recommendations as CSV",
