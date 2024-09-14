@@ -20,24 +20,6 @@ background_css = """
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
-        color: white;
-    }
-
-    /* Additional styling for text, buttons, etc. */
-    h1, h2, h3, h4, h5, h6, p, .stMarkdown {
-        color: white !important;
-    }
-
-    /* Styling buttons */
-    .stButton > button {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
     }
     </style>
 """
