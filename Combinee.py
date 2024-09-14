@@ -15,7 +15,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     .stApp {
-        background-color: #f0f0f5;  /* Light background color */
+        background-color: Black;  /* Light background color */
     }
     .stButton>button {
         background-color: #4CAF50;
