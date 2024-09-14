@@ -14,7 +14,7 @@ st.set_page_config(
 pages = {
     "Home": "🏠",
     "Content-Based Recommendations": "🔍",
-    "Top 10 Recommendation based on User Preference": "📈",
+    "Top 10 Recommendation based on User Preferences": "📈",
     "Game Correlation Finder": "🔗",
     "About": "ℹ️"
 }
