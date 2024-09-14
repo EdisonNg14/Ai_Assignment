@@ -15,7 +15,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     .stApp {
-        background-color: #black;
+        background-color: #f0f0f0;
     }
     .stButton>button {
         background-color: #4CAF50;
@@ -76,10 +76,41 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Go to", ["Content-Based Recommendations", "File Upload and Filters", "Game Correlation Finder"])
+page = st.sidebar.selectbox("Go to", ["Home", "About", "Content-Based Recommendations", "File Upload and Filters", "Game Correlation Finder"])
+
+# Page: Home
+if page == "Home":
+    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🎮 Welcome to the Game Recommendation System!</h1>", unsafe_allow_html=True)
+    st.markdown("""
+    This app is designed to help you discover new games based on your preferences and the games you already enjoy.
+    Use the navigation sidebar to explore the following features:
+    
+    - **Content-Based Recommendations**: Find games similar to your favorites.
+    - **File Upload and Filters**: Get personalized recommendations based on the data you upload.
+    - **Game Correlation Finder**: Explore the relationship between different games based on user ratings.
+    
+    Enjoy your gaming journey! 🎮
+    """)
+
+# Page: About
+elif page == "About":
+    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>📖 About This App</h1>", unsafe_allow_html=True)
+    st.markdown("""
+    This app uses advanced machine learning techniques like **TF-IDF** and **cosine similarity** to recommend video games based on their genres, platforms, publishers, and user scores.
+    
+    - **Content-Based Filtering**: We analyze the characteristics of the games you like and recommend others that share similar features.
+    - **User Score Correlation**: By analyzing user ratings, the app can show how different games are correlated with each other.
+
+    ### Technologies Used:
+    - **Streamlit**: For building the interactive web application.
+    - **Pandas**: For data manipulation and analysis.
+    - **Scikit-learn**: For machine learning algorithms like TF-IDF and cosine similarity.
+    
+    This app is part of a game recommendation project, designed to give personalized suggestions and insights into the gaming world.
+    """)
 
 # Page 1: Content-Based Recommendations
-if page == "Content-Based Recommendations":
+elif page == "Content-Based Recommendations":
     st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🎮 Game Recommendation System</h1>", unsafe_allow_html=True)
     st.markdown("<h2>Find Games Similar to Your Favorite</h2>", unsafe_allow_html=True)
     st.write("This app helps you find games similar to the ones you like. Enter the game title below to get recommendations.")
@@ -112,7 +143,7 @@ if page == "Content-Based Recommendations":
             st.write("No matching game found. Please try another.")
 
 # Page 2: File Upload and Filters
-elif page == "Top 10 Recommandation based on User Preferense":
+elif page == "File Upload and Filters":
     st.title("📂 Upload Your Game Data")
     st.markdown("""
     Follow these steps to get personalized game recommendations:
@@ -165,72 +196,4 @@ elif page == "Top 10 Recommandation based on User Preferense":
 
             # Button to get recommendations
             if st.button("Get Recommendations"):
-                with st.spinner("Processing your request..."):
-                    try:
-                        recommended_games = recommend_games(df_uploaded, {'Genres': genres, 'Minimum User Score': min_user_score})
-                        if not recommended_games.empty:
-                            top_10_games = recommended_games.head(10)
-                            st.write("### Top 10 Recommended Games")
-                            st.dataframe(top_10_games)
-
-                            # Download button
-                            csv = top_10_games.to_csv(index=False)
-                            st.download_button(
-                                label="Download Recommendations as CSV",
-                                data=csv,
-                                file_name='recommended_games.csv',
-                                mime='text/csv'
-                            )
-                        else:
-                            st.warning("No games match your preferences. Try adjusting the genre or score.")
-                    except Exception as e:
-                        st.error(f"An error occurred while processing recommendations: {e}")
-        except Exception as e:
-            st.error(f"An error occurred while loading the file: {e}")
-    else:
-        st.info("Please upload a CSV file to get started.")
-
-# Page 3: Game Correlation Finder
-elif page == "Game Correlation Finder":
-    st.title('🎮 Game Correlation Finder')
-    st.markdown("Find out how games are related based on user ratings!")
-
-    # Prepare the score matrix
-    score_matrix = df_corr.pivot_table(index='user_id', columns='Title', values='user_score', fill_value=0)
-    game_titles = score_matrix.columns.sort_values().tolist()
-
-    # Split layout into two columns for better organization
-    col1, col2 = st.columns([1, 3])
-
-    with col1:
-        game_title = st.selectbox("Select a game title", game_titles, help="Choose a game to see its correlation with others.")
-
-    st.markdown("---")
-
-    if game_title:
-        game_user_score = score_matrix[game_title]
-        similar_to_game = score_matrix.corrwith(game_user_score)
-        corr_drive = pd.DataFrame(similar_to_game, columns=['Correlation']).dropna()
-
-        with col2:
-            st.subheader(f"🎯 Correlations for '{game_title}'")
-            st.dataframe(corr_drive.sort_values('Correlation', ascending=False).head(10))
-
-        # Display number of user scores for each game
-        user_scores_count = df_corr.groupby('Title')['user_score'].count().rename('total num_of_user_score')
-        merged_corr_drive = corr_drive.join(user_scores_count, how='left')
-
-        # Add developer and publisher columns (assuming they're in the dataset)
-        additional_info = df_corr[['Title', 'Developer', 'Genres']].drop_duplicates().set_index('Title')
-        detailed_corr_info = merged_corr_drive.join(additional_info, how='left')
-
-        st.subheader("Detailed High Score Correlations (with > 10 scores):")
-        high_score_corr = detailed_corr_info[detailed_corr_info['total num_of_user_score'] > 10].sort_values('Correlation', ascending=False).head()
-
-        st.dataframe(high_score_corr[['Correlation', 'total num_of_user_score', 'Developer', 'Genres']])
-
-    else:
-        st.warning("Please select a game title from the dropdown to see the correlations.")
-
-# Footer
-st.markdown("<h5 style='text-align: center;'>Powered by Streamlit</h5>", unsafe_allow_html=True)
+               
