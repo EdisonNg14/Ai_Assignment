@@ -45,36 +45,24 @@ def content_based_recommendations(game_name, num_recommendations=5):
     except IndexError:
         return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
+
+# Initialize session state for the current page
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = "Home"
+
 # Sidebar for navigation (similar to ChatGPT-style buttons)
 st.sidebar.title("Navigation")
-pages = ["Home", "Search for Game", "About"]
 
-# Implement buttons for navigation in the sidebar
+# Sidebar buttons with session state handling
 if st.sidebar.button("Home"):
-    page = "Home"  
-elif st.sidebar.button("Search for Game"):
-    page = "Search for Game"
-elif st.sidebar.button("About"):
-    page = "About"
-else:
-    page = "Home"  # Default to Home if no button is pressed
+    st.session_state.current_page = "Home"
+if st.sidebar.button("Search for Game"):
+    st.session_state.current_page = "Search for Game"
+if st.sidebar.button("About"):
+    st.session_state.current_page = "About"
 
 # Page: Home
-if page == "Home":
-    # Sidebar for navigation (similar to ChatGPT-style buttons)
-st.sidebar.title("Navigation")
-pages = ["Home", "Search for Game", "About"]
-
-# Implement buttons for navigation in the sidebar
-if st.sidebar.button("Home"):
-    page = "Home"  
-elif st.sidebar.button("Search for Game"):
-    page = "Search for Game"
-elif st.sidebar.button("About"):
-    page = "About"
-else:
-    page = "Home"  # Default to Home if no button is pressed
-
+if st.session_state.current_page == "Home":
     st.markdown("<h2>Welcome to the Game Recommendation System</h2>", unsafe_allow_html=True)
     st.write("""
         This app helps you find similar games based on the one you like. 
@@ -83,7 +71,7 @@ else:
     """)
 
 # Page: Search for Game
-elif page == "Search for Game":
+elif st.session_state.current_page == "Search for Game":
     st.subheader("Search for a Game")
 
     # Sidebar for additional filters within the Search page
@@ -115,7 +103,7 @@ elif page == "Search for Game":
             st.write("No matching game found. Please try another.")
 
 # Page: About
-elif page == "About":
+elif st.session_state.current_page == "About":
     st.subheader("About this App")
     st.write("""
         The Game Recommendation System uses a content-based filtering approach to find similar games.
