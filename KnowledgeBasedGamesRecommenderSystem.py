@@ -68,7 +68,7 @@ def main():
 
             genres = st.text_input(
                 "Preferred Genre (e.g., Action, Adventure):",
-                value="Action",
+                value="",
                 placeholder="Enter genres (e.g., Action, Adventure)",
                 help="Enter the genre(s) you like. Use commas for multiple genres."
             ).strip()
