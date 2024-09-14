@@ -75,8 +75,8 @@ elif st.session_state.current_page == "Search for Game":
     st.subheader("Search for a Game")
 
     # Sidebar for additional filters within the Search page
-    st.sidebar.header("Filters")
-    num_recommendations = st.sidebar.slider('Number of recommendations', min_value=1, max_value=10, value=5)
+    st.subheader("Filters")
+    num_recommendations = st.slider('Number of recommendations', min_value=1, max_value=10, value=5)
 
     # Add a selectbox for game selection
     game_list = df['Title'].unique()
