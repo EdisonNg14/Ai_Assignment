@@ -36,6 +36,8 @@ def content_based_recommendations(game_name, num_recommendations=5):
         # Sort games based on similarity scores
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
+        sim_scores = sim_scores[1:11]
+
         # Get indices of the most similar games
         sim_indices = [i[0] for i in sim_scores[1:num_recommendations+1]]
 
