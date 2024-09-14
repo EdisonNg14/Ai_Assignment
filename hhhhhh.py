@@ -15,7 +15,7 @@ st.set_page_config(
 background_css = """
     <style>
     .main {
-        background-image: url('https://your-image-url-here.com/background.jpg');
+        background-image: url('360_F_88981880_YjJManMJ6hJmKr5CZteFJAkEzXIh8mxW.jpg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
