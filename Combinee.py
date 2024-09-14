@@ -124,11 +124,11 @@ elif page == "Content-Based Recommendations":
             st.write("No matching game found. Please try another.")
 
 # Page 2: File Upload and Filters
-elif page == "Top 10 Recommendation based on User Preference":
-    st.title("📂 Upload Your Game Data")
+elif page == "Top 10 Recommendation based on User Preferences":
+    st.title("📂 Upload Latest Dataset")
     st.markdown("""
     Follow these steps to get personalized game recommendations:
-    1. Upload your game data in CSV format.
+    1. Upload your game data in CSV format(Ensure that the dataset is the latest).
     2. Enter your preferred genre and minimum user score.
     3. Click "Get Recommendations" to view the top suggestions.
     """)
@@ -175,7 +175,7 @@ elif page == "Top 10 Recommendation based on User Preference":
                 st.error("Please enter a valid numeric score.")
                 min_user_score = 0.0
 
-            # Button to get recommendations
+            # Recommendations button
             if st.button("Get Recommendations"):
                 with st.spinner("Processing your request..."):
                     try:
@@ -185,7 +185,7 @@ elif page == "Top 10 Recommendation based on User Preference":
                             st.write("### Top 10 Recommended Games")
                             st.dataframe(top_10_games)
 
-                            # Download button
+                            # Download 
                             csv = top_10_games.to_csv(index=False)
                             st.download_button(
                                 label="Download Recommendations as CSV",
