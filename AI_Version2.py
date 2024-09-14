@@ -52,23 +52,29 @@ pages = ["Home", "Search for Game", "About"]
 # Implement buttons for navigation in the sidebar
 if st.sidebar.button("Home"):
     page = "Home"  
-    page = "Search for Game"
-    page = "About"
 elif st.sidebar.button("Search for Game"):
-    page = "Home"  
     page = "Search for Game"
-    page = "About"
 elif st.sidebar.button("About"):
-    page = "Home"  
-    page = "Search for Game"
     page = "About"
 else:
     page = "Home"  # Default to Home if no button is pressed
-    page = "Search for Game"
-    page = "About"
 
 # Page: Home
 if page == "Home":
+    # Sidebar for navigation (similar to ChatGPT-style buttons)
+st.sidebar.title("Navigation")
+pages = ["Home", "Search for Game", "About"]
+
+# Implement buttons for navigation in the sidebar
+if st.sidebar.button("Home"):
+    page = "Home"  
+elif st.sidebar.button("Search for Game"):
+    page = "Search for Game"
+elif st.sidebar.button("About"):
+    page = "About"
+else:
+    page = "Home"  # Default to Home if no button is pressed
+
     st.markdown("<h2>Welcome to the Game Recommendation System</h2>", unsafe_allow_html=True)
     st.write("""
         This app helps you find similar games based on the one you like. 
