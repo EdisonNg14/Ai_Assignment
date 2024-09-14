@@ -58,6 +58,8 @@ elif st.sidebar.button("About"):
     page = "About"
 else:
     page = "Home"  # Default to Home if no button is pressed
+    page = "Search for Game"
+    page = "About"
 
 # Page: Home
 if page == "Home":
