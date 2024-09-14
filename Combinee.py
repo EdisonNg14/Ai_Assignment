@@ -76,10 +76,18 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 # Navigation Sidebar
-st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Go to",
-    ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"]
+selected = option_menu(
+    menu_title="Navigation",
+    options=["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"],
+    icons=["house", "search", "upload", "bar-chart", "info-circle"],  # Using Bootstrap Icons
+    menu_icon="cast",
+    default_index=0,
+    styles={
+        "container": {"padding": "0!important", "background-color": "#0E1117"},
+        "icon": {"color": "white", "font-size": "20px"}, 
+        "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#4CAF50"},
+        "nav-link-selected": {"background-color": "#4CAF50"},
+    }
 )
 
 
