@@ -42,54 +42,49 @@ def main():
     3. **Click** "Get Recommendations" to view the top suggestions.
     """)
     
-    # Layout with columns
-    col1, col2 = st.columns([2, 1])
+    # Upload section
+    st.header("Upload Your Game Data")
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
-    with col1:
-        st.header("Upload Your Game Data")
-        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-
-        if uploaded_file is not None:
-            try:
-                # Load the dataset
-                df = pd.read_csv(uploaded_file)
-                
-                # Data processing
-                df['Genres'] = df['Genres'].astype(str).fillna('')
-                df['User Score'] = pd.to_numeric(df['User Score'], errors='coerce')
-
-                # Display dataset preview
-                st.write("### Dataset Preview:")
-                st.dataframe(df.head())
-            except Exception as e:
-                st.error(f"An error occurred while loading the file: {e}")
-
-    with col2:
-        st.header("Filter Options")
-
-        genres = st.text_input(
-            "Preferred Genre (e.g., Action, Adventure):",
-            value="Action",
-            help="Enter the genre(s) you like. Use commas for multiple genres."
-        ).strip()
-
-        min_user_score_str = st.text_input(
-            "Minimum Acceptable User Score (0.0 to 10.0):",
-            value="0.0",
-            help="Enter a number between 0.0 and 10.0 for the minimum score."
-        )
-
+    if uploaded_file is not None:
         try:
-            min_user_score = float(min_user_score_str)
-            if min_user_score < 0.0 or min_user_score > 10.0:
-                st.error("Score must be between 0.0 and 10.0.")
-                min_user_score = 0.0
-        except ValueError:
-            st.error("Please enter a valid numeric score.")
-            min_user_score = 0.0
+            # Load the dataset
+            df = pd.read_csv(uploaded_file)
+            
+            # Data processing
+            df['Genres'] = df['Genres'].astype(str).fillna('')
+            df['User Score'] = pd.to_numeric(df['User Score'], errors='coerce')
 
-        if st.button("Get Recommendations"):
-            if uploaded_file:
+            # Display dataset preview
+            st.write("### Dataset Preview:")
+            st.dataframe(df.head())
+
+            # Filter options section
+            st.header("Filter Options")
+
+            genres = st.text_input(
+                "Preferred Genre (e.g., Action, Adventure):",
+                value="Action",
+                help="Enter the genre(s) you like. Use commas for multiple genres."
+            ).strip()
+
+            min_user_score_str = st.text_input(
+                "Minimum Acceptable User Score (0.0 to 10.0):",
+                value="0.0",
+                help="Enter a number between 0.0 and 10.0 for the minimum score."
+            )
+
+            try:
+                min_user_score = float(min_user_score_str)
+                if min_user_score < 0.0 or min_user_score > 10.0:
+                    st.error("Score must be between 0.0 and 10.0.")
+                    min_user_score = 0.0
+            except ValueError:
+                st.error("Please enter a valid numeric score.")
+                min_user_score = 0.0
+
+            # Button to get recommendations
+            if st.button("Get Recommendations"):
                 with st.spinner("Processing your request..."):
                     try:
                         recommended_games = recommend_games(df, {'Genres': genres, 'Minimum User Score': min_user_score})
@@ -111,8 +106,10 @@ def main():
                             st.write("No games match your preferences. Try adjusting the genre or score.")
                     except Exception as e:
                         st.error(f"An error occurred while processing recommendations: {e}")
-            else:
-                st.error("Please upload a CSV file to get started.")
+        except Exception as e:
+            st.error(f"An error occurred while loading the file: {e}")
+    else:
+        st.info("Please upload a CSV file to get started.")
 
 def recommend_games(df, preferences):
     genre_filter = df['Genres'].str.contains(preferences['Genres'], case=False, na=False)
