@@ -78,10 +78,8 @@ page = st.session_state.page
 
 # Home Page
 if page == "Home":
-    css_code="""<style> background-image: url("360_F_88981880_YjJManMJ6hJmKr5CZteFJAkEzXIh8mxW.jpg");</style>"""
-    st.markdown(css_code, unsafe_allow_html=True)
     st.title("🎮 Welcome to the Game Recommendation System")
-    st.markdown("""
+    st.markdown("""css_code="""<style> background-image: url("360_F_88981880_YjJManMJ6hJmKr5CZteFJAkEzXIh8mxW.jpg");</style>"""
     Welcome to the *Game Recommendation System*! This app provides various ways to find your next favorite video game.
     
     ### Features:
