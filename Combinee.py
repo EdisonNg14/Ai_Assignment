@@ -112,7 +112,7 @@ if page == "Content-Based Recommendations":
             st.write("No matching game found. Please try another.")
 
 # Page 2: File Upload and Filters
-elif page == "File Upload and Filters":
+elif page == "Top 10 Recommandation based on User Preferense":
     st.title("📂 Upload Your Game Data")
     st.markdown("""
     Follow these steps to get personalized game recommendations:
