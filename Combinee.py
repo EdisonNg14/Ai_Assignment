@@ -240,17 +240,23 @@ elif page == "Game Correlation Finder":
         user_scores_count = df_corr.groupby('Title')['user_score'].count().rename('total num_of_user_score')
         merged_corr_drive = corr_drive.join(user_scores_count, how='left')
 
+        avg_user_score = data.groupby('Title')['user_score'].mean().rename('avg_user_score')
+        detailed_corr_info = merged_corr_drive.join(avg_user_score, how='left')
+
         # Add developer and publisher columns (assuming they're in the dataset)
-        additional_info = df_corr[['Title', 'Developer', 'Genres']].drop_duplicates().set_index('Title')
-        detailed_corr_info = merged_corr_drive.join(additional_info, how='left')
+        additional_info = data[['Title', 'Developer', 'Genres']].drop_duplicates().set_index('Title')
+        detailed_corr_info = detailed_corr_info.join(additional_info, how='left')
 
-        st.subheader("Detailed High Score Correlations (with > 10 scores):")
+        # Show detailed high-score correlations with more information
+        st.subheader("Games you may like (with more than 10 number of user scores and average user score):")
         high_score_corr = detailed_corr_info[detailed_corr_info['total num_of_user_score'] > 10].sort_values('Correlation', ascending=False).head()
+    
+        # Display the dataframe with additional details including average user score
+        st.dataframe(high_score_corr[['Correlation', 'total num_of_user_score', 'avg_user_score', 'Developer', 'Genres']])
 
-        st.dataframe(high_score_corr[['Correlation', 'total num_of_user_score', 'Developer', 'Genres']])
+        else:
+          st.warning("Please select a game title from the dropdown to see the correlations.")
 
-    else:
-        st.warning("Please select a game title from the dropdown to see the correlations.")
 
 # About Page
 elif page == "About":
