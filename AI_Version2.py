@@ -45,10 +45,19 @@ def content_based_recommendations(game_name, num_recommendations=5):
     except IndexError:
         return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
-# Sidebar for navigation
+# Sidebar for navigation (similar to ChatGPT-style buttons)
 st.sidebar.title("Navigation")
 pages = ["Home", "Search for Game", "About"]
-page = st.sidebar.selectbox("Choose a page:", pages)
+
+# Implement buttons for navigation in the sidebar
+if st.sidebar.button("Home"):
+    page = "Home"
+elif st.sidebar.button("Search for Game"):
+    page = "Search for Game"
+elif st.sidebar.button("About"):
+    page = "About"
+else:
+    page = "Home"  # Default to Home if no button is pressed
 
 # Page: Home
 if page == "Home":
