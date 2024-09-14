@@ -74,49 +74,11 @@ def recommend_games(df, preferences):
     filtered_df = df[genre_filter & score_filter]
     return filtered_df
 
-import streamlit as st
-
-# Set page config
-st.set_page_config(
-    page_title="Game Recommendation System",
-    page_icon=":video_game:",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom CSS for sidebar
-st.markdown("""
-    <style>
-    .css-1d391kg {
-        background-color: #333;
-        color: white;
-    }
-    .css-1d391kg .st-radio > label {
-        color: white;
-    }
-    .css-1d391kg .st-radio > label:hover {
-        color: #4CAF50;
-    }
-    .css-1d391kg .stRadio > div > div > div > div > div {
-        background-color: #1e1e1e;
-    }
-    .css-1d391kg .stRadio > div > div > div > div > div:hover {
-        background-color: #2e2e2e;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Navigation Sidebar
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Go to",
-    [
-        ("🏠 Home", "Home"),
-        ("🔍 Content-Based Recommendations", "Content-Based Recommendations"),
-        ("📈 Top 10 Recommendation based on User Preference", "Top 10 Recommendation based on User Preference"),
-        ("🔗 Game Correlation Finder", "Game Correlation Finder"),
-        ("📖 About", "About")
-    ]
+    ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"]
 )
 
 # Home Page
