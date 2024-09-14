@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 
 def main():
     st.title("Game Recommendation System")
@@ -34,17 +33,28 @@ def main():
             
             # Function to get user preferences via Streamlit inputs
             def get_user_preferences():
+                # Example genre input
                 genres = st.sidebar.text_input(
                     "Enter your preferred genre (e.g., Action, Adventure):",
                     value="Action",
                     help="Type the genre you are interested in. For multiple genres, separate them with commas."
                 ).strip()
                 
-                min_user_score = st.sidebar.number_input(
+                # Minimum user score input with validation
+                min_user_score_str = st.sidebar.text_input(
                     "Enter your minimum acceptable user score (0.0 to 10.0):",
-                    min_value=0.0, max_value=10.0, value=0.0, format="%.1f",
-                    help="Specify the minimum user score you are willing to accept."
+                    value="0.0",
+                    help="Specify the minimum user score you are willing to accept. Enter a number between 0.0 and 10.0."
                 )
+                
+                try:
+                    min_user_score = float(min_user_score_str)
+                    if min_user_score < 0.0 or min_user_score > 10.0:
+                        st.sidebar.error("Score must be between 0.0 and 10.0.")
+                        min_user_score = 0.0
+                except ValueError:
+                    st.sidebar.error("Please enter a valid numeric score.")
+                    min_user_score = 0.0
                 
                 return {
                     'Genres': genres,
