@@ -74,7 +74,7 @@ if st.session_state.current_page == "Home":
 elif st.session_state.current_page == "Search for Game":
     st.subheader("Search for a Game")
 
-    # Sidebar for additional filters within the Search page
+    #additional filters within the Search page
     st.subheader("Filters")
     num_recommendations = st.slider('Number of recommendations', min_value=1, max_value=10, value=5)
 
