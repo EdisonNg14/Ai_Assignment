@@ -7,7 +7,7 @@ st.markdown("Find out how games are related based on user ratings!")
 
 @st.cache_data
 def load_data():
-    path = 'NewDataSet.csv'
+    path = 'all_video_games(cleaned).csv'
     df = pd.read_csv(path)
     path_user = 'User_Dataset.csv'
     userset = pd.read_csv(path_user)
