@@ -30,30 +30,40 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-
 # Load the data for content-based recommendations
 @st.cache_data
-def load_data():
+def load_content_data():
     df = pd.read_csv('all_video_games(cleaned).csv')
     df = df.dropna(subset=['Genres', 'Platforms', 'Publisher', 'User Score'])  # Drop rows with essential missing values
     df['User Score'] = df['User Score'].astype(float)  # Ensure correct data type for user score
     df['content'] = df['Genres'] + ' ' + df['Platforms'] + ' ' + df['Publisher']
     return df
 
-df = load_data()
+# Load the data for correlation finder
+@st.cache_data
+def load_correlation_data():
+    path = 'all_video_games(cleaned).csv'
+    df = pd.read_csv(path)
+    path_user = 'User_Dataset.csv'
+    userset = pd.read_csv(path_user)
+    data = pd.merge(df, userset, on='Title').dropna()  
+    return data
+
+df_content = load_content_data()
+df_corr = load_correlation_data()
 
 # Function to recommend games based on cosine similarity
 def content_based_recommendations(game_name, num_recommendations=5):
     vectorizer = TfidfVectorizer(stop_words='english')
-    content_matrix = vectorizer.fit_transform(df['content'])
+    content_matrix = vectorizer.fit_transform(df_content['content'])
 
     try:
         cosine_sim = cosine_similarity(content_matrix, content_matrix)
-        idx = df[df['Title'].str.lower() == game_name.lower()].index[0]
+        idx = df_content[df_content['Title'].str.lower() == game_name.lower()].index[0]
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
         sim_indices = [i[0] for i in sim_scores[1:num_recommendations+1]]
-        return df.iloc[sim_indices][['Title', 'Genres', 'User Score', 'Platforms', 'Release Date']]
+        return df_content.iloc[sim_indices][['Title', 'Genres', 'User Score', 'Platforms', 'Release Date']]
     except IndexError:
         return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
@@ -66,7 +76,7 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Go to", ["Content-Based Recommendations", "File Upload and Filters"])
+page = st.sidebar.selectbox("Go to", ["Content-Based Recommendations", "File Upload and Filters", "Game Correlation Finder"])
 
 # Page 1: Content-Based Recommendations
 if page == "Content-Based Recommendations":
@@ -75,7 +85,7 @@ if page == "Content-Based Recommendations":
     st.write("This app helps you find games similar to the ones you like. Enter the game title below to get recommendations.")
 
     # Add a selectbox for game selection
-    game_list = df['Title'].unique()
+    game_list = df_content['Title'].unique()
     game_input = st.selectbox("Choose a game from the list:", game_list)
 
     # Filters within the main page
@@ -84,7 +94,7 @@ if page == "Content-Based Recommendations":
 
     # Game information display
     if game_input:
-        game_info = df[df['Title'] == game_input].iloc[0]
+        game_info = df_content[df_content['Title'] == game_input].iloc[0]
         st.markdown(f"### Selected Game: **{game_info['Title']}**")
         st.write(f"**Genres:** {game_info['Genres']}")
         st.write(f"**Platforms:** {game_info['Platforms']}")
@@ -179,6 +189,48 @@ elif page == "File Upload and Filters":
             st.error(f"An error occurred while loading the file: {e}")
     else:
         st.info("Please upload a CSV file to get started.")
+
+# Page 3: Game Correlation Finder
+elif page == "Game Correlation Finder":
+    st.title('🎮 Game Correlation Finder')
+    st.markdown("Find out how games are related based on user ratings!")
+
+    # Prepare the score matrix
+    score_matrix = df_corr.pivot_table(index='user_id', columns='Title', values='user_score', fill_value=0)
+    game_titles = score_matrix.columns.sort_values().tolist()
+
+    # Split layout into two columns for better organization
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        game_title = st.selectbox("Select a game title", game_titles, help="Choose a game to see its correlation with others.")
+
+    st.markdown("---")
+
+    if game_title:
+        game_user_score = score_matrix[game_title]
+        similar_to_game = score_matrix.corrwith(game_user_score)
+        corr_drive = pd.DataFrame(similar_to_game, columns=['Correlation']).dropna()
+
+        with col2:
+            st.subheader(f"🎯 Correlations for '{game_title}'")
+            st.dataframe(corr_drive.sort_values('Correlation', ascending=False).head(10))
+
+        # Display number of user scores for each game
+        user_scores_count = df_corr.groupby('Title')['user_score'].count().rename('total num_of_user_score')
+        merged_corr_drive = corr_drive.join(user_scores_count, how='left')
+
+        # Add developer and publisher columns (assuming they're in the dataset)
+        additional_info = df_corr[['Title', 'Developer', 'Genres']].drop_duplicates().set_index('Title')
+        detailed_corr_info = merged_corr_drive.join(additional_info, how='left')
+
+        st.subheader("Detailed High Score Correlations (with > 10 scores):")
+        high_score_corr = detailed_corr_info[detailed_corr_info['total num_of_user_score'] > 10].sort_values('Correlation', ascending=False).head()
+
+        st.dataframe(high_score_corr[['Correlation', 'total num_of_user_score', 'Developer', 'Genres']])
+
+    else:
+        st.warning("Please select a game title from the dropdown to see the correlations.")
 
 # Footer
 st.markdown("<h5 style='text-align: center;'>Powered by Streamlit</h5>", unsafe_allow_html=True)
