@@ -76,9 +76,21 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 st.sidebar.title("Navigation")
+
+# Define the pages with icons
+pages = {
+    "Home": "🏠",
+    "Content-Based Recommendations": "🔍",
+    "Top 10 Recommendation based on User Preference": "📈",
+    "Game Correlation Finder": "🔗",
+    "About": "ℹ️"
+}
+
+# Create a radio button for page selection with icons
 page = st.sidebar.radio(
     "Go to",
-    ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"]
+    options=list(pages.keys()),
+    format_func=lambda page: f"{pages[page]} {page}"
 )
 
 # Home Page
