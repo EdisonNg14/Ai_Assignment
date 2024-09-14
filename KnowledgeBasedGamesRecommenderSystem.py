@@ -35,7 +35,7 @@ def main():
     Welcome to the **Game Recommendation System**! This app helps you find new games based on your preferences.
     
     Follow these steps to get personalized game recommendations:
-    1. Upload your game data in CSV format.
+    1. Upload your game data in CSV format(Ensure that the dataset is the latest).
     2. Enter your preferred genre and minimum user score.
     3. Click "Get Recommendations" to view the top suggestions.
     """)
@@ -44,7 +44,7 @@ def main():
     st.markdown("<hr>", unsafe_allow_html=True)
 
     # Upload section
-    st.subheader("📂 Upload Your Game Data")
+    st.subheader("📂 Upload Latest Dataset")
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
     if uploaded_file is not None:
@@ -89,7 +89,7 @@ def main():
                 st.error("Please enter a valid numeric score.")
                 min_user_score = 0.0
 
-            # Button to get recommendations
+            # Recommendations button
             if st.button("Get Recommendations"):
                 with st.spinner("Processing your request..."):
                     try:
@@ -100,7 +100,7 @@ def main():
                             st.write("### Top 10 Recommended Games")
                             st.dataframe(top_10_games)
 
-                            # Download button
+                            # Download
                             csv = top_10_games.to_csv(index=False)
                             st.download_button(
                                 label="Download Recommendations as CSV",
