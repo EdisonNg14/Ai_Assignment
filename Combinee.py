@@ -27,6 +27,13 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #45a049;
     }
+    .stSidebar {  /* Custom styling for sidebar */
+        background-color: #f0f2f6;
+    }
+    .stSidebar .sidebar-menu {
+        margin-top: 1rem;
+        font-size: 18px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
