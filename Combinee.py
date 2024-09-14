@@ -15,7 +15,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     .stApp {
-        background-color: #f0f0f0;
+        background-color: #f0f0f5;  /* Light background color */
     }
     .stButton>button {
         background-color: #4CAF50;
@@ -76,37 +76,20 @@ def recommend_games(df, preferences):
 
 # Navigation Sidebar
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Go to", ["Home", "About", "Content-Based Recommendations", "File Upload and Filters", "Game Correlation Finder"])
+page = st.sidebar.selectbox("Go to", ["Home", "Content-Based Recommendations", "Top 10 Recommendation based on User Preference", "Game Correlation Finder", "About"])
 
-# Page: Home
+# Home Page
 if page == "Home":
-    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🎮 Welcome to the Game Recommendation System!</h1>", unsafe_allow_html=True)
+    st.title("🎮 Welcome to the Game Recommendation System")
     st.markdown("""
-    This app is designed to help you discover new games based on your preferences and the games you already enjoy.
-    Use the navigation sidebar to explore the following features:
+    Welcome to the *Game Recommendation System*! This app provides various ways to find your next favorite video game.
     
-    - **Content-Based Recommendations**: Find games similar to your favorites.
-    - **File Upload and Filters**: Get personalized recommendations based on the data you upload.
-    - **Game Correlation Finder**: Explore the relationship between different games based on user ratings.
+    ### Features:
+    - *Content-Based Recommendations:* Find games similar to the ones you already enjoy.
+    - *Top 10 Recommendations:* Get personalized recommendations based on your uploaded game data.
+    - *Game Correlation Finder:* Discover how games are related based on user ratings.
     
-    Enjoy your gaming journey! 🎮
-    """)
-
-# Page: About
-elif page == "About":
-    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>📖 About This App</h1>", unsafe_allow_html=True)
-    st.markdown("""
-    This app uses advanced machine learning techniques like **TF-IDF** and **cosine similarity** to recommend video games based on their genres, platforms, publishers, and user scores.
-    
-    - **Content-Based Filtering**: We analyze the characteristics of the games you like and recommend others that share similar features.
-    - **User Score Correlation**: By analyzing user ratings, the app can show how different games are correlated with each other.
-
-    ### Technologies Used:
-    - **Streamlit**: For building the interactive web application.
-    - **Pandas**: For data manipulation and analysis.
-    - **Scikit-learn**: For machine learning algorithms like TF-IDF and cosine similarity.
-    
-    This app is part of a game recommendation project, designed to give personalized suggestions and insights into the gaming world.
+    Use the navigation sidebar to explore different features of the app.
     """)
 
 # Page 1: Content-Based Recommendations
@@ -126,24 +109,24 @@ elif page == "Content-Based Recommendations":
     # Game information display
     if game_input:
         game_info = df_content[df_content['Title'] == game_input].iloc[0]
-        st.markdown(f"### Selected Game: **{game_info['Title']}**")
-        st.write(f"**Genres:** {game_info['Genres']}")
-        st.write(f"**Platforms:** {game_info['Platforms']}")
-        st.write(f"**Publisher:** {game_info['Publisher']}")
-        st.write(f"**User Score:** {game_info['User Score']}")
-        st.write(f"**Release Date:** {game_info['Release Date']}")
+        st.markdown(f"### Selected Game: {game_info['Title']}")
+        st.write(f"Genres: {game_info['Genres']}")
+        st.write(f"Platforms: {game_info['Platforms']}")
+        st.write(f"Publisher: {game_info['Publisher']}")
+        st.write(f"User Score: {game_info['User Score']}")
+        st.write(f"Release Date: {game_info['Release Date']}")
 
     # Button to get recommendations
     if st.button('Get Recommendations'):
         recommendations = content_based_recommendations(game_input, num_recommendations)
         if not recommendations.empty:
-            st.markdown(f"### Games similar to **{game_input}**:")
+            st.markdown(f"### Games similar to {game_input}:")
             st.table(recommendations)
         else:
             st.write("No matching game found. Please try another.")
 
 # Page 2: File Upload and Filters
-elif page == "File Upload and Filters":
+elif page == "Top 10 Recommendation based on User Preference":
     st.title("📂 Upload Your Game Data")
     st.markdown("""
     Follow these steps to get personalized game recommendations:
@@ -196,4 +179,92 @@ elif page == "File Upload and Filters":
 
             # Button to get recommendations
             if st.button("Get Recommendations"):
-               
+                with st.spinner("Processing your request..."):
+                    try:
+                        recommended_games = recommend_games(df_uploaded, {'Genres': genres, 'Minimum User Score': min_user_score})
+                        if not recommended_games.empty:
+                            top_10_games = recommended_games.head(10)
+                            st.write("### Top 10 Recommended Games")
+                            st.dataframe(top_10_games)
+
+                            # Download button
+                            csv = top_10_games.to_csv(index=False)
+                            st.download_button(
+                                label="Download Recommendations as CSV",
+                                data=csv,
+                                file_name='recommended_games.csv',
+                                mime='text/csv'
+                            )
+                        else:
+                            st.warning("No games match your preferences. Try adjusting the genre or score.")
+                    except Exception as e:
+                        st.error(f"An error occurred while processing recommendations: {e}")
+        except Exception as e:
+            st.error(f"An error occurred while loading the file: {e}")
+    else:
+        st.info("Please upload a CSV file to get started.")
+
+# Page 3: Game Correlation Finder
+elif page == "Game Correlation Finder":
+    st.title('🎮 Game Correlation Finder')
+    st.markdown("Find out how games are related based on user ratings!")
+
+    # Prepare the score matrix
+    score_matrix = df_corr.pivot_table(index='user_id', columns='Title', values='user_score', fill_value=0)
+    game_titles = score_matrix.columns.sort_values().tolist()
+
+    # Split layout into two columns for better organization
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        game_title = st.selectbox("Select a game title", game_titles, help="Choose a game to see its correlation with others.")
+
+    st.markdown("---")
+
+    if game_title:
+        game_user_score = score_matrix[game_title]
+        similar_to_game = score_matrix.corrwith(game_user_score)
+        corr_drive = pd.DataFrame(similar_to_game, columns=['Correlation']).dropna()
+
+        with col2:
+            st.subheader(f"🎯 Correlations for '{game_title}'")
+            st.dataframe(corr_drive.sort_values('Correlation', ascending=False).head(10))
+
+        # Display number of user scores for each game
+        user_scores_count = df_corr.groupby('Title')['user_score'].count().rename('total num_of_user_score')
+        merged_corr_drive = corr_drive.join(user_scores_count, how='left')
+
+        # Add developer and publisher columns (assuming they're in the dataset)
+        additional_info = df_corr[['Title', 'Developer', 'Genres']].drop_duplicates().set_index('Title')
+        detailed_corr_info = merged_corr_drive.join(additional_info, how='left')
+
+        st.subheader("Detailed High Score Correlations (with > 10 scores):")
+        high_score_corr = detailed_corr_info[detailed_corr_info['total num_of_user_score'] > 10].sort_values('Correlation', ascending=False).head()
+
+        st.dataframe(high_score_corr[['Correlation', 'total num_of_user_score', 'Developer', 'Genres']])
+
+    else:
+        st.warning("Please select a game title from the dropdown to see the correlations.")
+
+# About Page
+elif page == "About":
+    st.title("📖 About")
+    st.markdown("""
+    This Game Recommendation System was developed to help gamers discover new titles they might enjoy.
+    
+    ### How It Works:
+    - *Content-Based Recommendations*: This method uses the genres, platforms, and publishers of games to find similar titles.
+    - *Top 10 Recommendations*: Upload your own dataset and apply filters to get personalized game recommendations.
+    - *Game Correlation Finder*: Analyze game correlations based on user ratings to find titles that have similar user reception.
+    
+    ### Technologies Used:
+    - *Python*: For building the recommendation algorithms.
+    - *Streamlit*: For creating an interactive and user-friendly interface.
+    - *Pandas & Scikit-learn*: For data manipulation and machine learning.
+
+    ### Creator:
+    This app was created as part of an AI project to explore recommendation systems in gaming.
+    """)
+
+# Footer
+st.markdown("<h5 style='text-align: center;'>Powered by Streamlit</h5>", unsafe_allow_html=True)
