@@ -15,7 +15,7 @@ st.set_page_config(
 background_css = """
     <style>
     .main {
-        background-image: url('360_F_88981880_YjJManMJ6hJmKr5CZteFJAkEzXIh8mxW.jpg');
+        background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dgame%2Bbackground&psig=AOvVaw3_XR93klPh6Vp6Ad2KZE4Z&ust=1726416341845000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJjf-5vowogDFQAAAAAdAAAAABAE');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
