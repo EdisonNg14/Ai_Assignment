@@ -45,34 +45,65 @@ def content_based_recommendations(game_name, num_recommendations=5):
     except IndexError:
         return pd.DataFrame(columns=['Title', 'Genres', 'User Score'])
 
-# Sidebar for additional filters
-st.header("Filters")
-num_recommendations = st.slider('Number of recommendations', min_value=1, max_value=10, value=5)
+# Sidebar for navigation
+st.sidebar.title("Navigation")
+pages = ["Home", "Search for Game", "About"]
+page = st.sidebar.selectbox("Choose a page:", pages)
 
-# Add a selectbox for game selection
-st.subheader("Search for a Game")
-game_list = df['Title'].unique()
-game_input = st.selectbox("Choose a game from the list:", game_list)
+# Page: Home
+if page == "Home":
+    st.markdown("<h2>Welcome to the Game Recommendation System</h2>", unsafe_allow_html=True)
+    st.write("""
+        This app helps you find similar games based on the one you like. 
+        Use the sidebar to navigate through the app. 
+        You can search for a game and get recommendations for similar games, or learn more about how the system works in the 'About' section.
+    """)
 
-# Game information display
-if game_input:
-    game_info = df[df['Title'] == game_input].iloc[0]
-    st.markdown(f"### Selected Game: **{game_info['Title']}**")
-    st.write(f"**Genres:** {game_info['Genres']}")
-    st.write(f"**Platforms:** {game_info['Platforms']}")
-    st.write(f"**Publisher:** {game_info['Publisher']}")
-    st.write(f"**User Score:** {game_info['User Score']}")
-    st.write(f"**Release Date:** {game_info['Release Date']}")
+# Page: Search for Game
+elif page == "Search for Game":
+    st.subheader("Search for a Game")
 
-# Button to generate recommendations
-if st.button('Get Recommendations'):
-    recommendations = content_based_recommendations(game_input, num_recommendations)
-    
-    if not recommendations.empty:
-        st.markdown(f"### Games similar to **{game_input}**:")
-        st.table(recommendations)
-    else:
-        st.write("No matching game found. Please try another.")
+    # Sidebar for additional filters within the Search page
+    st.sidebar.header("Filters")
+    num_recommendations = st.sidebar.slider('Number of recommendations', min_value=1, max_value=10, value=5)
+
+    # Add a selectbox for game selection
+    game_list = df['Title'].unique()
+    game_input = st.selectbox("Choose a game from the list:", game_list)
+
+    # Game information display
+    if game_input:
+        game_info = df[df['Title'] == game_input].iloc[0]
+        st.markdown(f"### Selected Game: **{game_info['Title']}**")
+        st.write(f"**Genres:** {game_info['Genres']}")
+        st.write(f"**Platforms:** {game_info['Platforms']}")
+        st.write(f"**Publisher:** {game_info['Publisher']}")
+        st.write(f"**User Score:** {game_info['User Score']}")
+        st.write(f"**Release Date:** {game_info['Release Date']}")
+
+    # Button to generate recommendations
+    if st.button('Get Recommendations'):
+        recommendations = content_based_recommendations(game_input, num_recommendations)
+        
+        if not recommendations.empty:
+            st.markdown(f"### Games similar to **{game_input}**:")
+            st.table(recommendations)
+        else:
+            st.write("No matching game found. Please try another.")
+
+# Page: About
+elif page == "About":
+    st.subheader("About this App")
+    st.write("""
+        The Game Recommendation System uses a content-based filtering approach to find similar games.
+        It takes into account genres, platforms, and publishers, and recommends games that are most similar to the one you search for.
+        
+        The system utilizes:
+        - **TF-IDF Vectorizer** to convert textual information into numerical vectors.
+        - **Cosine Similarity** to compute the similarity between games.
+        
+        Explore different games and find new ones that match your preferences!
+    """)
 
 # Footer
 st.markdown("<h5 style='text-align: center;'>Powered by Streamlit</h5>", unsafe_allow_html=True)
