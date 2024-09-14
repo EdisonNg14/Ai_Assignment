@@ -11,24 +11,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for background color and button styling
-st.markdown("""
-    <style>
-    .stApp {
-        background-color: Black;  /* Light background color */
-    }
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 16px;
-    }
-    .stButton>button:hover {
-        background-color: #45a049;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+pages = {
+    "Home": "🏠",
+    "Content-Based Recommendations": "🔍",
+    "Top 10 Recommendation based on User Preference": "📈",
+    "Game Correlation Finder": "🔗",
+    "About": "ℹ️"
+}
 
 # Load the data for content-based recommendations
 @st.cache_data
