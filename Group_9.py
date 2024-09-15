@@ -11,6 +11,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Set a background image or color
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #f0f2f6;
+        background-image: url('https://www.vecteezy.com/vector-art/4277175-forest-game-background');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 pages = {
     "Home": "🏠",
     "Content-Based Recommendations": "🔍",
