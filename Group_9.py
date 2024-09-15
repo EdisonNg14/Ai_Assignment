@@ -83,7 +83,7 @@ if page == "Home":
     st.markdown("""
     <div style='text-align: center;'>
         <h2 style='color: #4CAF50;'>Discover Your Next Favorite Game!</h2>
-        <p style='font-size: 18px;'>
+        <p style='font-size: 18px; color: black;'>
             Our Game Recommendation System helps you find games you’ll love based on various methods.
         </p>
     </div>
@@ -92,11 +92,11 @@ if page == "Home":
     # Section: Content-Based Recommendations
     st.markdown("""
     <div style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;'>
-        <h3 style='color: #black;'>🔍 Content-Based Recommendations</h3>
-        <p style='font-size: 16px;'>
+        <h3 style='color: #2196F3;'>🔍 Content-Based Recommendations</h3>
+        <p style='font-size: 16px; color: black;'>
             Find games similar to the ones you already enjoy! Enter the title of your favorite game, and we'll recommend similar titles based on genres, platforms, and publishers.
         </p>
-        <ul style='font-size: 16px;'>
+        <ul style='font-size: 16px; color: black;'>
             <li>Discover new titles that match your interests.</li>
             <li>Get personalized recommendations based on your game library.</li>
             <li>Easy to use with just a few clicks.</li>
@@ -108,10 +108,10 @@ if page == "Home":
     st.markdown("""
     <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px;'>
         <h3 style='color: #4CAF50;'>📈 Top 10 Recommendations based on User Preferences</h3>
-        <p style='font-size: 16px;'>
+        <p style='font-size: 16px; color: black;'>
             Upload your own game data and filter results based on your preferences. Customize your search by entering preferred genres and minimum user scores to get the top 10 recommendations tailored just for you.
         </p>
-        <ul style='font-size: 16px;'>
+        <ul style='font-size: 16px; color: black;'>
             <li>Upload your latest dataset for up-to-date recommendations.</li>
             <li>Apply filters to match your taste and preferences.</li>
             <li>Download your personalized recommendations as a CSV file.</li>
@@ -123,10 +123,10 @@ if page == "Home":
     st.markdown("""
     <div style='background-color: #fff3e0; padding: 20px; border-radius: 8px; margin-top: 20px;'>
         <h3 style='color: #FF5722;'>🔗 Game Correlation Finder</h3>
-        <p style='font-size: 16px;'>
+        <p style='font-size: 16px; color: black;'>
             Explore how games are related based on user ratings. Select a game to see its correlation with others, and find out which games share similar user reception.
         </p>
-        <ul style='font-size: 16px;'>
+        <ul style='font-size: 16px; color: black;'>
             <li>Identify games with similar user scores.</li>
             <li>Understand game relationships through detailed correlations.</li>
             <li>Discover new games based on user ratings and correlations.</li>
