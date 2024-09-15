@@ -92,7 +92,7 @@ if page == "Home":
     # Section: Content-Based Recommendations
     st.markdown("""
     <div style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;'>
-        <h3 style='color: #2196F3;'>🔍 Content-Based Recommendations</h3>
+        <h3 style='color: #black;'>🔍 Content-Based Recommendations</h3>
         <p style='font-size: 16px;'>
             Find games similar to the ones you already enjoy! Enter the title of your favorite game, and we'll recommend similar titles based on genres, platforms, and publishers.
         </p>
