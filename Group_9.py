@@ -82,8 +82,8 @@ if page == "Home":
 
     st.markdown("""
     <div style='text-align: center;'>
-        <h2 style='color: #4CAF50;'>Discover Your Next Favorite Game!</h2>
-        <p style='font-size: 18px; color: black;'>
+        <h2 style='color: #4CAF50; font-family: "Comic Sans MS", cursive; font-size: 2.5em;'>Discover Your Next Favorite Game!</h2>
+        <p style='font-size: 18px; color: black; font-family: "Arial", sans-serif;'>
             Our Game Recommendation System helps you find games you’ll love based on various methods.
         </p>
     </div>
@@ -91,12 +91,12 @@ if page == "Home":
 
     # Section: Content-Based Recommendations
     st.markdown("""
-    <div style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;'>
-        <h3 style='color: #2196F3;'>🔍 Content-Based Recommendations</h3>
-        <p style='font-size: 16px; color: black;'>
+    <div style='background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);'>
+        <h3 style='color: #2196F3; font-family: "Verdana", sans-serif; font-size: 1.8em;'>🔍 Content-Based Recommendations</h3>
+        <p style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6;'>
             Find games similar to the ones you already enjoy! Enter the title of your favorite game, and we'll recommend similar titles based on genres, platforms, and publishers.
         </p>
-        <ul style='font-size: 16px; color: black;'>
+        <ul style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6; list-style-type: square;'>
             <li>Discover new titles that match your interests.</li>
             <li>Get personalized recommendations based on your game library.</li>
             <li>Easy to use with just a few clicks.</li>
@@ -106,12 +106,12 @@ if page == "Home":
 
     # Section: Top 10 Recommendations based on User Preferences
     st.markdown("""
-    <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px;'>
-        <h3 style='color: #4CAF50;'>📈 Top 10 Recommendations based on User Preferences</h3>
-        <p style='font-size: 16px; color: black;'>
+    <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);'>
+        <h3 style='color: #4CAF50; font-family: "Verdana", sans-serif; font-size: 1.8em;'>📈 Top 10 Recommendations based on User Preferences</h3>
+        <p style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6;'>
             Upload your own game data and filter results based on your preferences. Customize your search by entering preferred genres and minimum user scores to get the top 10 recommendations tailored just for you.
         </p>
-        <ul style='font-size: 16px; color: black;'>
+        <ul style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6; list-style-type: square;'>
             <li>Upload your latest dataset for up-to-date recommendations.</li>
             <li>Apply filters to match your taste and preferences.</li>
             <li>Download your personalized recommendations as a CSV file.</li>
@@ -121,12 +121,12 @@ if page == "Home":
 
     # Section: Game Correlation Finder
     st.markdown("""
-    <div style='background-color: #fff3e0; padding: 20px; border-radius: 8px; margin-top: 20px;'>
-        <h3 style='color: #FF5722;'>🔗 Game Correlation Finder</h3>
-        <p style='font-size: 16px; color: black;'>
+    <div style='background-color: #fff3e0; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);'>
+        <h3 style='color: #FF5722; font-family: "Verdana", sans-serif; font-size: 1.8em;'>🔗 Game Correlation Finder</h3>
+        <p style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6;'>
             Explore how games are related based on user ratings. Select a game to see its correlation with others, and find out which games share similar user reception.
         </p>
-        <ul style='font-size: 16px; color: black;'>
+        <ul style='font-size: 16px; color: black; font-family: "Georgia", serif; line-height: 1.6; list-style-type: square;'>
             <li>Identify games with similar user scores.</li>
             <li>Understand game relationships through detailed correlations.</li>
             <li>Discover new games based on user ratings and correlations.</li>
@@ -135,7 +135,7 @@ if page == "Home":
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div style='text-align: center; margin-top: 40px;'>
+    <div style='text-align: center; margin-top: 40px; font-family: "Arial", sans-serif;'>
         <h4>Use the navigation sidebar to explore different features of the app.</h4>
     </div>
     """, unsafe_allow_html=True)
