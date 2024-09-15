@@ -11,24 +11,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.markdown(
-    """
-    <style>
-    /* Sidebar */
-    .css-1d391kg {
-        background-color: #333333;
-        color: white;
-    }
-    /* Sidebar titles and text */
-    .css-1d391kg h1, .css-1d391kg p {
-        color: white;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
 pages = {
     "Home": "🏠",
     "Content-Based Recommendations": "🔍",
