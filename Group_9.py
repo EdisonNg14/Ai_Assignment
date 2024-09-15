@@ -79,16 +79,66 @@ page = st.session_state.page
 # Home Page
 if page == "Home":
     st.title("🎮 Welcome to the Game Recommendation System")
+
     st.markdown("""
-    Welcome to the *Game Recommendation System*! This app provides various ways to find your next favorite video game.
-    
-    ### Features:
-    - *Content-Based Recommendations:* Find games similar to the ones you already enjoy.
-    - *Top 10 Recommendations:* Get personalized recommendations based on your uploaded game data.
-    - *Game Correlation Finder:* Discover how games are related based on user ratings.
-    
-    Use the navigation sidebar to explore different features of the app.
-    """)
+    <div style='text-align: center;'>
+        <h2 style='color: #4CAF50;'>Discover Your Next Favorite Game!</h2>
+        <p style='font-size: 18px;'>
+            Our Game Recommendation System helps you find games you’ll love based on various methods.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Section: Content-Based Recommendations
+    st.markdown("""
+    <div style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;'>
+        <h3 style='color: #2196F3;'>🔍 Content-Based Recommendations</h3>
+        <p style='font-size: 16px;'>
+            Find games similar to the ones you already enjoy! Enter the title of your favorite game, and we'll recommend similar titles based on genres, platforms, and publishers.
+        </p>
+        <ul style='font-size: 16px;'>
+            <li>Discover new titles that match your interests.</li>
+            <li>Get personalized recommendations based on your game library.</li>
+            <li>Easy to use with just a few clicks.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Section: Top 10 Recommendations based on User Preferences
+    st.markdown("""
+    <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px;'>
+        <h3 style='color: #4CAF50;'>📈 Top 10 Recommendations based on User Preferences</h3>
+        <p style='font-size: 16px;'>
+            Upload your own game data and filter results based on your preferences. Customize your search by entering preferred genres and minimum user scores to get the top 10 recommendations tailored just for you.
+        </p>
+        <ul style='font-size: 16px;'>
+            <li>Upload your latest dataset for up-to-date recommendations.</li>
+            <li>Apply filters to match your taste and preferences.</li>
+            <li>Download your personalized recommendations as a CSV file.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Section: Game Correlation Finder
+    st.markdown("""
+    <div style='background-color: #fff3e0; padding: 20px; border-radius: 8px; margin-top: 20px;'>
+        <h3 style='color: #FF5722;'>🔗 Game Correlation Finder</h3>
+        <p style='font-size: 16px;'>
+            Explore how games are related based on user ratings. Select a game to see its correlation with others, and find out which games share similar user reception.
+        </p>
+        <ul style='font-size: 16px;'>
+            <li>Identify games with similar user scores.</li>
+            <li>Understand game relationships through detailed correlations.</li>
+            <li>Discover new games based on user ratings and correlations.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style='text-align: center; margin-top: 40px;'>
+        <h4>Use the navigation sidebar to explore different features of the app.</h4>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Page 1: Content-Based Recommendations
 elif page == "Content-Based Recommendations":
