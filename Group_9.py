@@ -83,7 +83,7 @@ if page == "Home":
     st.markdown("""
     <div style='text-align: center;'>
         <h2 style='color: #4CAF50; font-family: "Comic Sans MS", cursive; font-size: 2.5em;'>Discover Your Next Favorite Game!</h2>
-        <p style='font-size: 18px; color: black; font-family: "Arial", sans-serif;'>
+        <p style='font-size: 18px; color: white; font-family: "Arial", sans-serif;'>
             Our Game Recommendation System helps you find games you’ll love based on various methods.
         </p>
     </div>
